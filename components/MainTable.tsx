@@ -84,6 +84,14 @@ const MainTable = () => {
     operatingProfit: number
   ) => (sales > 0 ? (operatingProfit / sales) * 100 : 0);
 
+  // 入力可能なフィールドのスタイル
+  const editableInputClass =
+    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50";
+
+  // 入力不可能なフィールド（読み取り専用）のスタイル
+  const readonlyInputClass =
+    "px-6 py-4 whitespace-nowrap text-sm text-gray-500 bg-gray-100";
+
   return (
     <div className=" bg-gray-100">
       <div className="overflow-x-auto w-full">
@@ -122,7 +130,7 @@ const MainTable = () => {
                     onChange={(e) =>
                       handleInputChange(product.id, "sales", e.target.value)
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -142,7 +150,7 @@ const MainTable = () => {
                     onChange={(e) =>
                       handleInputChange(product.id, "cost", e.target.value)
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -152,10 +160,7 @@ const MainTable = () => {
                 売上総利益(粗利)
               </td>
               {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
+                <td key={product.id} className={readonlyInputClass}>
                   {calculateGrossProfit(product.sales, product.cost)}
                 </td>
               ))}
@@ -170,10 +175,7 @@ const MainTable = () => {
                   product.cost
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {grossMargin.toFixed(2)}%
                   </td>
                 );
@@ -200,7 +202,7 @@ const MainTable = () => {
                         e.target.value
                       )
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -212,10 +214,7 @@ const MainTable = () => {
                 純粗利
               </td>
               {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
+                <td key={product.id} className={readonlyInputClass}>
                   {calculateNetGrossProfit(
                     product.sales,
                     product.cost,
@@ -241,10 +240,7 @@ const MainTable = () => {
                   netGrossProfit
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {netGrossMargin.toFixed(2)}%
                   </td>
                 );
@@ -271,7 +267,7 @@ const MainTable = () => {
                         e.target.value
                       )
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -294,10 +290,7 @@ const MainTable = () => {
                   product.promotionCosts
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {salesProfit}
                   </td>
                 );
@@ -324,10 +317,7 @@ const MainTable = () => {
                   salesProfit
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {salesProfitMargin.toFixed(2)}%
                   </td>
                 );
@@ -350,7 +340,7 @@ const MainTable = () => {
                     onChange={(e) =>
                       handleInputChange(product.id, "abcCosts", e.target.value)
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -377,10 +367,7 @@ const MainTable = () => {
                   product.abcCosts
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {abcProfit}
                   </td>
                 );
@@ -412,10 +399,7 @@ const MainTable = () => {
                   abcProfit
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {abcProfitMargin.toFixed(2)}%
                   </td>
                 );
@@ -442,7 +426,7 @@ const MainTable = () => {
                         e.target.value
                       )
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className={editableInputClass}
                   />
                 </td>
               ))}
@@ -473,10 +457,7 @@ const MainTable = () => {
                   product.operationCosts
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {operatingProfit}
                   </td>
                 );
@@ -511,10 +492,7 @@ const MainTable = () => {
                   operatingProfit
                 );
                 return (
-                  <td
-                    key={product.id}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  >
+                  <td key={product.id} className={readonlyInputClass}>
                     {operatingProfitMargin.toFixed(2)}%
                   </td>
                 );
