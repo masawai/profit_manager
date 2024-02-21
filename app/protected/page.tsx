@@ -1,8 +1,7 @@
 import AuthButton from "@/components/AuthButton";
-import Header from "@/components/Header";
 import HomeIcon from "@/components/HomeIcon";
-import FetchDataSteps from "@/components/tutorial/FetchDataSteps";
 import { createClient } from "@/utils/supabase/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedPage() {
@@ -25,13 +24,16 @@ export default async function ProtectedPage() {
         </div>
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-            <HomeIcon />
+            <Link className="flex items-center gap-2 font-medium" href="/">
+              <HomeIcon className="w-6 h-6" />
+              <span className="text-lg font-semibold">Profit Manager</span>
+            </Link>
             <AuthButton />
           </div>
         </nav>
       </div>
 
-      <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
+      {/* <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
         <Header />
         <main className="flex-1 flex flex-col gap-6">
           <h2 className="font-bold text-4xl mb-4">Next steps</h2>
@@ -51,7 +53,7 @@ export default async function ProtectedPage() {
             Supabase
           </a>
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 }
