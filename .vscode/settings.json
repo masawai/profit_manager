@@ -27,5 +27,8 @@
   "jest.jestCommandLine": "npm test --",
 
   // Disable TypeScript surveys.
-  "typescript.surveys.enabled": false
+  "typescript.surveys.enabled": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  }
 }

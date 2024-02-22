@@ -1,8 +1,8 @@
+import AuthButton from "@/components/AuthButton";
+import HomeIcon from "@/components/HomeIcon";
 import MainTable from "@/components/MainTable";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import AuthButton from "../components/AuthButton";
-import HomeIcon from "../components/HomeIcon";
 
 export default async function Index() {
   const canInitSupabaseClient = () => {
