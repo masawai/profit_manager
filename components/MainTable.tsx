@@ -35,6 +35,12 @@ const MainTable = () => {
       operationCosts: 700000,
     },
   ]);
+  const [contextMenu, setContextMenu] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    productId: null as number | null,
+  });
 
   const handleInputChange = (id: number, field: string, value: string) => {
     setProducts(
@@ -42,6 +48,53 @@ const MainTable = () => {
         product.id === id ? { ...product, [field]: value } : product
       )
     );
+  };
+
+  const addNewProduct = () => {
+    const newProduct = {
+      id: products.length + 1,
+      name: `商品${products.length + 1}`,
+      sales: 0,
+      cost: 0,
+      additionalCosts: 0,
+      promotionCosts: 0,
+      abcCosts: 0,
+      operationCosts: 0,
+    };
+    setProducts([...products, newProduct]);
+  };
+
+  const removeProduct = (id: number) => {
+    setProducts(products.filter((product) => product.id !== id));
+    setContextMenu({ ...contextMenu, visible: false }); // コンテキストメニューを閉じる
+  };
+
+  const duplicateProduct = (id: number) => {
+    const productToDuplicate = products.find((product) => product.id === id);
+    if (productToDuplicate) {
+      const newProduct = {
+        ...productToDuplicate,
+        id: Math.max(...products.map((p) => p.id)) + 1,
+      };
+      setProducts([...products, newProduct]);
+    }
+    setContextMenu({ ...contextMenu, visible: false }); // コンテキストメニューを閉じる
+  };
+
+  const showContextMenu = (event: React.MouseEvent, productId: number) => {
+    event.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: event.pageX,
+      y: event.pageY,
+      productId,
+    });
+  };
+
+  const handleClickOutside = (event: React.MouseEvent) => {
+    if (contextMenu.visible) {
+      setContextMenu({ ...contextMenu, visible: false });
+    }
   };
 
   const calculateGrossProfit = (sales: number, cost: number): number =>
@@ -93,11 +146,17 @@ const MainTable = () => {
     "px-6 py-4 whitespace-nowrap text-sm text-gray-500 bg-gray-100";
 
   return (
-    <div className=" bg-gray-100">
+    <div className=" bg-gray-100" onClick={handleClickOutside}>
       <div className="overflow-x-auto w-full">
         <h1 className="text-xl font-semibold text-gray-900 mb-4">
           5段階利益管理表
         </h1>
+        <button
+          onClick={addNewProduct}
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        >
+          列を追加
+        </button>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -108,8 +167,16 @@ const MainTable = () => {
                 <th
                   key={product.id}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  onContextMenu={(e) => showContextMenu(e, product.id)}
                 >
-                  {product.name}
+                  <input
+                    type="text"
+                    value={product.name}
+                    onChange={(e) =>
+                      handleInputChange(product.id, "name", e.target.value)
+                    }
+                    className={editableInputClass}
+                  />
                 </th>
               ))}
             </tr>
@@ -501,6 +568,32 @@ const MainTable = () => {
           </tbody>
         </table>
       </div>
+      {contextMenu.visible && (
+        <ul
+          className="absolute bg-white shadow rounded z-50"
+          style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+          onClick={(e) => e.stopPropagation()} // ここでのクリックは伝播させない
+        >
+          <li
+            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            onClick={() =>
+              contextMenu.productId !== null &&
+              removeProduct(contextMenu.productId)
+            }
+          >
+            削除
+          </li>
+          <li
+            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            onClick={() =>
+              contextMenu.productId !== null &&
+              duplicateProduct(contextMenu.productId)
+            }
+          >
+            複製
+          </li>
+        </ul>
+      )}
     </div>
   );
 };
