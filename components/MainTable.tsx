@@ -324,7 +324,7 @@ const MainTable = () => {
 
   return (
     <div className=" bg-gray-100" onClick={handleClickOutside}>
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto w-auto max-w-full m-2">
         <h1 className="text-xl font-semibold text-gray-900 mb-4">
           5段階利益管理表
         </h1>
@@ -399,7 +399,6 @@ const MainTable = () => {
               readOnly={true}
             />
 
-            {/* 注文連動費 */}
             <TableRow
               label="注文連動費"
               values={products.map((product) => product.additionalCosts)}
@@ -435,7 +434,6 @@ const MainTable = () => {
               readOnly={true}
             />
 
-            {/* 販促費 */}
             <TableRow
               label="販促費"
               values={products.map((product) => product.promotionCosts)}
@@ -443,8 +441,8 @@ const MainTable = () => {
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "promotionCosts", value)
               }
+              tooltipText="あああ"
             />
-
             <TableRow
               label="販売利益"
               values={products.map((product) => {

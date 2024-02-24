@@ -1,4 +1,4 @@
-// components/TableRow.tsx
+import Tooltip from "@/components/Tooltip";
 import React from "react";
 
 interface TableRowProps {
@@ -7,6 +7,7 @@ interface TableRowProps {
   isPercentage?: boolean;
   readOnly?: boolean;
   onValueChange?: (index: number, value: string) => void;
+  tooltipText?: string;
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -15,6 +16,7 @@ const TableRow: React.FC<TableRowProps> = ({
   isPercentage = false,
   readOnly = false,
   onValueChange,
+  tooltipText,
 }) => {
   const handleChange = (index: number, value: string) => {
     if (onValueChange) {
@@ -33,7 +35,11 @@ const TableRow: React.FC<TableRowProps> = ({
   return (
     <tr>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-        {label}
+        {tooltipText ? (
+          <Tooltip text={tooltipText}>{label}</Tooltip> // ツールチップを使用
+        ) : (
+          label
+        )}
       </td>
       {values.map((value, index) => (
         <td
