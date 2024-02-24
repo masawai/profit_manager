@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import TableRow from "./TableRow";
 
 const MainTable = () => {
   const [products, setProducts] = useState([
@@ -365,170 +366,104 @@ const MainTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                売上
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.sales}
-                    onChange={(e) =>
-                      handleInputChange(product.id, "sales", e.target.value)
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                原価
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.cost}
-                    onChange={(e) =>
-                      handleInputChange(product.id, "cost", e.target.value)
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                売上総利益(粗利)
-              </td>
-              {products.map((product) => (
-                <td key={product.id} className={readonlyInputClass}>
-                  {calculateGrossProfit(product.sales, product.cost)}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                売上総利益率
-              </td>
-              {products.map((product) => {
-                const grossMargin = calculateGrossMargin(
-                  product.sales,
-                  product.cost
-                );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {grossMargin.toFixed(2)}%
-                  </td>
-                );
-              })}
-            </tr>
+            <TableRow
+              label="売上"
+              values={products.map((product) => product.sales)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "sales", value)
+              }
+            />
+            <TableRow
+              label="原価"
+              values={products.map((product) => product.cost)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "cost", value)
+              }
+            />
+            <TableRow
+              label="売上総利益(粗利)"
+              values={products.map((product) =>
+                calculateGrossProfit(product.sales, product.cost)
+              )}
+              isPercentage={false}
+              readOnly={true}
+            />
+            <TableRow
+              label="売上総利益率"
+              values={products.map((product) =>
+                calculateGrossMargin(product.sales, product.cost)
+              )}
+              isPercentage={true}
+              readOnly={true}
+            />
 
             {/* 注文連動費 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                注文連動費
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.additionalCosts}
-                    onChange={(e) =>
-                      handleInputChange(
-                        product.id,
-                        "additionalCosts",
-                        e.target.value
-                      )
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
+            <TableRow
+              label="注文連動費"
+              values={products.map((product) => product.additionalCosts)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "additionalCosts", value)
+              }
+            />
 
-            {/* 純粗利 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                純粗利
-              </td>
-              {products.map((product) => (
-                <td key={product.id} className={readonlyInputClass}>
-                  {calculateNetGrossProfit(
-                    product.sales,
-                    product.cost,
-                    product.additionalCosts
-                  )}
-                </td>
-              ))}
-            </tr>
+            <TableRow
+              label="純粗利"
+              values={products.map((product) =>
+                calculateNetGrossProfit(
+                  product.sales,
+                  product.cost,
+                  product.additionalCosts
+                )
+              )}
+              readOnly={true}
+            />
 
-            {/* 純粗利率 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                純粗利率
-              </td>
-              {products.map((product) => {
+            <TableRow
+              label="純粗利率"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
                   product.additionalCosts
                 );
-                const netGrossMargin = calculateNetGrossMargin(
-                  product.sales,
-                  netGrossProfit
-                );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {netGrossMargin.toFixed(2)}%
-                  </td>
-                );
+                return calculateNetGrossMargin(product.sales, netGrossProfit);
               })}
-            </tr>
+              isPercentage={true}
+              readOnly={true}
+            />
 
             {/* 販促費 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                販促費
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.promotionCosts}
-                    onChange={(e) =>
-                      handleInputChange(
-                        product.id,
-                        "promotionCosts",
-                        e.target.value
-                      )
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
+            <TableRow
+              label="販促費"
+              values={products.map((product) => product.promotionCosts)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "promotionCosts", value)
+              }
+            />
 
-            {/* 販売利益 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                販売利益
-              </td>
-              {products.map((product) => {
+            <TableRow
+              label="販売利益"
+              values={products.map((product) => {
+                const netGrossProfit = calculateNetGrossProfit(
+                  product.sales,
+                  product.cost,
+                  product.additionalCosts
+                );
+                return calculateSalesProfit(
+                  product.sales,
+                  netGrossProfit,
+                  product.promotionCosts
+                );
+              })}
+              readOnly={true}
+            />
+            <TableRow
+              label="販売利益率"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
@@ -539,19 +474,24 @@ const MainTable = () => {
                   netGrossProfit,
                   product.promotionCosts
                 );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {salesProfit}
-                  </td>
-                );
+                return calculateSalesProfitMargin(product.sales, salesProfit);
               })}
-            </tr>
-            {/* 販売利益率 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                販売利益率
-              </td>
-              {products.map((product) => {
+              isPercentage={true}
+              readOnly={true}
+            />
+
+            <TableRow
+              label="ABC"
+              values={products.map((product) => product.abcCosts)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "abcCosts", value)
+              }
+            />
+
+            <TableRow
+              label="ABC利益"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
@@ -562,46 +502,14 @@ const MainTable = () => {
                   netGrossProfit,
                   product.promotionCosts
                 );
-                const salesProfitMargin = calculateSalesProfitMargin(
-                  product.sales,
-                  salesProfit
-                );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {salesProfitMargin.toFixed(2)}%
-                  </td>
-                );
+                return calculateABCProfit(salesProfit, product.abcCosts);
               })}
-            </tr>
+              readOnly={true}
+            />
 
-            {/* ABC */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                ABC
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.abcCosts}
-                    onChange={(e) =>
-                      handleInputChange(product.id, "abcCosts", e.target.value)
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
-
-            {/* ABC利益 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                ABC利益
-              </td>
-              {products.map((product) => {
+            <TableRow
+              label="ABC利益率"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
@@ -616,20 +524,24 @@ const MainTable = () => {
                   salesProfit,
                   product.abcCosts
                 );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {abcProfit}
-                  </td>
-                );
+                return calculateABCProfitMargin(product.sales, abcProfit);
               })}
-            </tr>
+              isPercentage={true}
+              readOnly={true}
+            />
 
-            {/* ABC利益率 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                ABC利益率
-              </td>
-              {products.map((product) => {
+            <TableRow
+              label="運営費"
+              values={products.map((product) => product.operationCosts)}
+              readOnly={false}
+              onValueChange={(index, value) =>
+                handleInputChange(products[index].id, "operationCosts", value)
+              }
+            />
+
+            <TableRow
+              label="商品ごとの営業利益"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
@@ -644,50 +556,16 @@ const MainTable = () => {
                   salesProfit,
                   product.abcCosts
                 );
-                const abcProfitMargin = calculateABCProfitMargin(
-                  product.sales,
-                  abcProfit
-                );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {abcProfitMargin.toFixed(2)}%
-                  </td>
+                return calculateOperatingProfit(
+                  abcProfit,
+                  product.operationCosts
                 );
               })}
-            </tr>
-
-            {/* 運営費 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                運営費
-              </td>
-              {products.map((product) => (
-                <td
-                  key={product.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                >
-                  <input
-                    type="number"
-                    value={product.operationCosts}
-                    onChange={(e) =>
-                      handleInputChange(
-                        product.id,
-                        "operationCosts",
-                        e.target.value
-                      )
-                    }
-                    className={editableInputClass}
-                  />
-                </td>
-              ))}
-            </tr>
-
-            {/* 商品ごとの営業利益 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                商品ごとの営業利益
-              </td>
-              {products.map((product) => {
+              readOnly={true}
+            />
+            <TableRow
+              label="商品ごとの営業利益率"
+              values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
                   product.sales,
                   product.cost,
@@ -706,48 +584,14 @@ const MainTable = () => {
                   abcProfit,
                   product.operationCosts
                 );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {operatingProfit}
-                  </td>
-                );
-              })}
-            </tr>
-            {/* 商品ごとの営業利益率 */}
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                商品ごとの営業利益率
-              </td>
-              {products.map((product) => {
-                const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
-                );
-                const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
-                );
-                const abcProfit = calculateABCProfit(
-                  salesProfit,
-                  product.abcCosts
-                );
-                const operatingProfit = calculateOperatingProfit(
-                  abcProfit,
-                  product.operationCosts
-                );
-                const operatingProfitMargin = calculateOperatingProfitMargin(
+                return calculateOperatingProfitMargin(
                   product.sales,
                   operatingProfit
                 );
-                return (
-                  <td key={product.id} className={readonlyInputClass}>
-                    {operatingProfitMargin.toFixed(2)}%
-                  </td>
-                );
               })}
-            </tr>
+              isPercentage={true}
+              readOnly={true}
+            />
           </tbody>
         </table>
       </div>
