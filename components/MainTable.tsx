@@ -35,6 +35,7 @@ const MainTable = () => {
       operationCosts: 700000,
     },
   ]);
+
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -80,7 +81,182 @@ const MainTable = () => {
     }
     setContextMenu({ ...contextMenu, visible: false }); // コンテキストメニューを閉じる
   };
+  const downloadCSV = () => {
+    // 項目名の行
+    const headers = ["商品名", ...products.map((product) => product.name)].join(
+      ","
+    );
+    // 各項目ごとのデータを行として構築
+    const rows = [
+      ["売上", ...products.map((product) => product.sales)],
+      ["原価", ...products.map((product) => product.cost)],
+      [
+        "売上総利益(粗利)",
+        ...products.map((product) =>
+          calculateGrossProfit(product.sales, product.cost)
+        ),
+      ],
+      [
+        "売上総利益率",
+        ...products.map(
+          (product) =>
+            calculateGrossMargin(product.sales, product.cost).toFixed(2) + "%"
+        ),
+      ],
+      ["注文連動費", ...products.map((product) => product.additionalCosts)],
+      [
+        "純粗利",
+        ...products.map((product) =>
+          calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          )
+        ),
+      ],
+      [
+        "純粗利率",
+        ...products.map(
+          (product) =>
+            calculateNetGrossMargin(
+              product.sales,
+              calculateNetGrossProfit(
+                product.sales,
+                product.cost,
+                product.additionalCosts
+              )
+            ).toFixed(2) + "%"
+        ),
+      ],
+      ["販促費", ...products.map((product) => product.promotionCosts)],
+      [
+        "販売利益",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          return calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+        }),
+      ],
+      [
+        "販売利益率",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          const salesProfit = calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+          return (
+            calculateSalesProfitMargin(product.sales, salesProfit).toFixed(2) +
+            "%"
+          );
+        }),
+      ],
+      ["ABC", ...products.map((product) => product.abcCosts)],
+      [
+        "ABC利益",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          const salesProfit = calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+          return calculateABCProfit(salesProfit, product.abcCosts);
+        }),
+      ],
+      [
+        "ABC利益率",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          const salesProfit = calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
+          return (
+            calculateABCProfitMargin(product.sales, abcProfit).toFixed(2) + "%"
+          );
+        }),
+      ],
+      ["運営費", ...products.map((product) => product.operationCosts)],
+      [
+        "商品ごとの営業利益",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          const salesProfit = calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
+          return calculateOperatingProfit(abcProfit, product.operationCosts);
+        }),
+      ],
+      [
+        "商品ごとの営業利益率",
+        ...products.map((product) => {
+          const netGrossProfit = calculateNetGrossProfit(
+            product.sales,
+            product.cost,
+            product.additionalCosts
+          );
+          const salesProfit = calculateSalesProfit(
+            product.sales,
+            netGrossProfit,
+            product.promotionCosts
+          );
+          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
+          const operatingProfit = calculateOperatingProfit(
+            abcProfit,
+            product.operationCosts
+          );
+          return (
+            calculateOperatingProfitMargin(
+              product.sales,
+              operatingProfit
+            ).toFixed(2) + "%"
+          );
+        }),
+      ],
+    ];
+    // CSV形式の文字列に変換
+    const csvContent = [headers, ...rows.map((row) => row.join(","))].join(
+      "\n"
+    );
 
+    const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "products.csv");
+    document.body.appendChild(link); // Firefoxではこのステップが必要
+    link.click();
+    document.body.removeChild(link);
+  };
   const showContextMenu = (event: React.MouseEvent, productId: number) => {
     event.preventDefault();
     setContextMenu({
@@ -156,6 +332,13 @@ const MainTable = () => {
           className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
         >
           列を追加
+        </button>
+        {/* CSVダウンロードボタン */}
+        <button
+          onClick={downloadCSV}
+          className="mb-4 ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+        >
+          CSVダウンロード
         </button>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
