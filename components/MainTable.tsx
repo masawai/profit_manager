@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DownloadIcon from "./DownloadIcon";
 import TableRow from "./TableRow";
 
 const MainTable = () => {
@@ -328,19 +329,22 @@ const MainTable = () => {
         <h1 className="text-xl font-semibold text-gray-900 mb-4">
           5段階利益管理表
         </h1>
-        <button
-          onClick={addNewProduct}
-          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        >
-          列を追加
-        </button>
-        {/* CSVダウンロードボタン */}
-        <button
-          onClick={downloadCSV}
-          className="mb-4 ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-        >
-          CSVダウンロード
-        </button>
+        <div className="flex items-center mb-4">
+          <button
+            onClick={addNewProduct}
+            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          >
+            列を追加
+          </button>
+          {/* CSVダウンロードボタン */}
+          <button
+            onClick={downloadCSV}
+            className="mb-4 ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center"
+          >
+            ダウンロード
+            <DownloadIcon className="mr-2" />
+          </button>
+        </div>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
