@@ -27,10 +27,10 @@ export default function Legal() {
               </td>
               <td className="border border-gray-200 p-2">
                 <a
-                  href="#" //TODO: 変更する
+                  href="https://www.profit-manager.biz/"
                   className="text-blue-500 hover:text-blue-700"
                 >
-                  https://hogehoge.com
+                  https://www.profit-manager.biz/
                 </a>
               </td>
             </tr>

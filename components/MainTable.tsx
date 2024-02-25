@@ -321,14 +321,11 @@ const MainTable = () => {
 
   // 入力不可能なフィールド（読み取り専用）のスタイル
   const readonlyInputClass =
-    "px-6 py-4 whitespace-nowrap text-sm text-gray-500 bg-gray-100";
+    "px-6 py-4 whitespace-nowrap text-sm text-gray-500";
 
   return (
-    <div className=" bg-gray-100" onClick={handleClickOutside}>
+    <div className="" onClick={handleClickOutside}>
       <div className="overflow-x-auto w-auto max-w-full m-2">
-        <h1 className="text-xl font-semibold text-gray-900 mb-4">
-          5段階利益管理表
-        </h1>
         <div className="flex items-center mb-4">
           <button
             onClick={addNewProduct}
@@ -346,15 +343,15 @@ const MainTable = () => {
           </button>
         </div>
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                 項目
               </th>
               {products.map((product) => (
                 <th
                   key={product.id}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                   onContextMenu={(e) => showContextMenu(e, product.id)}
                 >
                   <input
@@ -363,13 +360,13 @@ const MainTable = () => {
                     onChange={(e) =>
                       handleInputChange(product.id, "name", e.target.value)
                     }
-                    className={editableInputClass}
+                    className="bg-white mt-1 block w-full rounded-md border-2 border-gray-200"
                   />
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-gray-50 divide-y divide-gray-200">
             <TableRow
               label="売上"
               values={products.map((product) => product.sales)}

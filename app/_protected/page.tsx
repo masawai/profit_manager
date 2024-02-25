@@ -1,0 +1,39 @@
+// TODO: ログイン機能不要のためコメントアウト
+
+// import AuthButton from "@/components/AuthButton";
+// import HomeIcon from "@/components/HomeIcon";
+// import { createClient } from "@/utils/supabase/server";
+// import Link from "next/link";
+// import { redirect } from "next/navigation";
+
+// export default async function ProtectedPage() {
+//   const supabase = createClient();
+
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
+
+//   if (!user) {
+//     return redirect("/login");
+//   }
+
+//   return (
+//     <div className="flex-1 w-full flex flex-col gap-20 items-center">
+//       <div className="w-full">
+//         <div className="py-6 font-bold bg-purple-950 text-center">
+//           This is a protected page that you can only see as an authenticated
+//           user
+//         </div>
+//         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+//           <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
+//             <Link className="flex items-center gap-2 font-medium" href="/">
+//               <HomeIcon className="w-6 h-6" />
+//               <span className="text-lg font-semibold">Profit Manager</span>
+//             </Link>
+//             <AuthButton />
+//           </div>
+//         </nav>
+//       </div>
+//     </div>
+//   );
+// }
