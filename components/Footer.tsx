@@ -2,7 +2,7 @@ import { FORM_URL } from "@/const/urls";
 
 const Footer = () => {
   return (
-    <footer className="bg-indigo-400 text-white text-center p-4 mt-8">
+    <footer className="bg-indigo-400 text-white text-center p-4 mt-8 print:hidden">
       <ul className="flex justify-center space-x-4">
         <li>
           <a href="/" className="hover:text-gray-300">

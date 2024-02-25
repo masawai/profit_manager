@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import DownloadIcon from "./DownloadIcon";
+import { useRef, useState } from "react";
 import TableRow from "./TableRow";
 
 const MainTable = () => {
@@ -44,6 +43,13 @@ const MainTable = () => {
     y: 0,
     productId: null as number | null,
   });
+
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const toggleMenuVisibility = () => {
+    setIsMenuVisible(!isMenuVisible);
+  };
 
   const handleInputChange = (id: number, field: string, value: string) => {
     setProducts(
@@ -259,6 +265,9 @@ const MainTable = () => {
     link.click();
     document.body.removeChild(link);
   };
+  const handlePrint = () => {
+    window.print();
+  };
   const showContextMenu = (event: React.MouseEvent, productId: number) => {
     event.preventDefault();
     setContextMenu({
@@ -315,32 +324,76 @@ const MainTable = () => {
     operatingProfit: number
   ) => (sales > 0 ? (operatingProfit / sales) * 100 : 0);
 
-  // 入力可能なフィールドのスタイル
-  const editableInputClass =
-    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50";
-
-  // 入力不可能なフィールド（読み取り専用）のスタイル
-  const readonlyInputClass =
-    "px-6 py-4 whitespace-nowrap text-sm text-gray-500";
-
   return (
     <div className="" onClick={handleClickOutside}>
       <div className="overflow-x-auto w-auto max-w-full m-2">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-4 print:hidden">
           <button
             onClick={addNewProduct}
             className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
           >
             列を追加
           </button>
-          {/* CSVダウンロードボタン */}
-          <button
-            onClick={downloadCSV}
-            className="mb-4 ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 flex items-center"
+          <div
+            className="relative inline-block text-left mb-4 ml-2"
+            ref={menuRef}
+            onMouseLeave={() => setIsMenuVisible(false)}
           >
-            ダウンロード
-            <DownloadIcon className="mr-2" />
-          </button>
+            <button
+              type="button"
+              onClick={toggleMenuVisibility} // ボタンクリックでメニューの表示状態を切り替える
+              className="inline-flex justify-center w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none"
+            >
+              ダウンロード
+              <svg
+                className="-mr-1 ml-2 h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            {/* メニューの表示状態に基づいてメニューを表示/非表示 */}
+            {isMenuVisible && (
+              <div
+                className="origin-top-right absolute right-0 w-auto rounded-md shadow-lg bg-white bg-opacity-100"
+                role="menu"
+                aria-orientation="vertical"
+              >
+                <div role="none" className="px-2 py-1">
+                  {/* メニューオプション */}
+                  <a
+                    href="#"
+                    className="text-gray-700 block text-sm hover:bg-gray-100"
+                    role="menuitem"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      downloadCSV();
+                    }}
+                  >
+                    CSVダウンロード
+                  </a>
+                  <a
+                    href="#"
+                    className="text-gray-700 block text-sm hover:bg-gray-100"
+                    role="menuitem"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePrint();
+                    }}
+                  >
+                    PDFダウンロード
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
