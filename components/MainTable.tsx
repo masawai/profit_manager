@@ -53,9 +53,23 @@ const MainTable = () => {
   };
 
   const handleInputChange = (id: number, field: string, value: string) => {
+    // 数値フィールドの場合、カンマを除去して数値に変換
+    // 入力が空の場合は0を設定
+    const numericValue =
+      field === "sales" ||
+      field === "cost" ||
+      field === "additionalCosts" ||
+      field === "promotionCosts" ||
+      field === "abcCosts" ||
+      field === "operationCosts"
+        ? value === ""
+          ? 0
+          : parseFloat(value.replace(/,/g, ""))
+        : value;
+
     setProducts(
       products.map((product) =>
-        product.id === id ? { ...product, [field]: value } : product
+        product.id === id ? { ...product, [field]: numericValue } : product
       )
     );
   };
@@ -97,158 +111,203 @@ const MainTable = () => {
     );
     // 各項目ごとのデータを行として構築
     const rows = [
-      ["売上", ...products.map((product) => product.sales)],
-      ["原価", ...products.map((product) => product.cost)],
+      ["売上", ...products.map((product) => product.sales.toLocaleString())],
+      ["原価", ...products.map((product) => product.cost.toLocaleString())],
       [
         "売上総利益(粗利)",
         ...products.map((product) =>
-          calculateGrossProfit(product.sales, product.cost)
+          calculateGrossProfit(
+            product.sales.toString(),
+            product.cost.toString()
+          ).toLocaleString()
         ),
       ],
       [
         "売上総利益率",
         ...products.map(
           (product) =>
-            calculateGrossMargin(product.sales, product.cost).toFixed(2) + "%"
+            Math.round(
+              calculateGrossMargin(
+                product.sales.toString(),
+                product.cost.toString()
+              )
+            ).toLocaleString() + "%"
         ),
       ],
-      ["注文連動費", ...products.map((product) => product.additionalCosts)],
+      [
+        "注文連動費",
+        ...products.map((product) => product.additionalCosts.toLocaleString()),
+      ],
       [
         "純粗利",
         ...products.map((product) =>
           calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
-          )
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
+          ).toLocaleString()
         ),
       ],
       [
         "純粗利率",
         ...products.map(
           (product) =>
-            calculateNetGrossMargin(
-              product.sales,
-              calculateNetGrossProfit(
-                product.sales,
-                product.cost,
-                product.additionalCosts
+            Math.round(
+              calculateNetGrossMargin(
+                product.sales.toString(),
+                calculateNetGrossProfit(
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
+                )
               )
-            ).toFixed(2) + "%"
+            ).toLocaleString() + "%"
         ),
       ],
-      ["販促費", ...products.map((product) => product.promotionCosts)],
+      [
+        "販促費",
+        ...products.map((product) => product.promotionCosts.toLocaleString()),
+      ],
       [
         "販売利益",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           return calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
-          );
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
+          ).toLocaleString();
         }),
       ],
       [
         "販売利益率",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           const salesProfit = calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
           );
           return (
-            calculateSalesProfitMargin(product.sales, salesProfit).toFixed(2) +
-            "%"
+            Math.round(
+              calculateSalesProfitMargin(
+                product.sales.toString(),
+                salesProfit.toString()
+              )
+            ).toLocaleString() + "%"
           );
         }),
       ],
-      ["ABC", ...products.map((product) => product.abcCosts)],
+      ["ABC", ...products.map((product) => product.abcCosts.toLocaleString())],
       [
         "ABC利益",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           const salesProfit = calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
           );
-          return calculateABCProfit(salesProfit, product.abcCosts);
+          return calculateABCProfit(
+            salesProfit.toString(),
+            product.abcCosts.toString()
+          ).toLocaleString();
         }),
       ],
       [
         "ABC利益率",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           const salesProfit = calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
           );
-          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
+          const abcProfit = calculateABCProfit(
+            salesProfit.toString(),
+            product.abcCosts.toString()
+          );
           return (
-            calculateABCProfitMargin(product.sales, abcProfit).toFixed(2) + "%"
+            Math.round(
+              calculateABCProfitMargin(
+                product.sales.toString(),
+                abcProfit.toString()
+              )
+            ).toLocaleString() + "%"
           );
         }),
       ],
-      ["運営費", ...products.map((product) => product.operationCosts)],
+      [
+        "運営費",
+        ...products.map((product) => product.operationCosts.toLocaleString()),
+      ],
       [
         "商品ごとの営業利益",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           const salesProfit = calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
           );
-          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
-          return calculateOperatingProfit(abcProfit, product.operationCosts);
+          const abcProfit = calculateABCProfit(
+            salesProfit.toString(),
+            product.abcCosts.toString()
+          );
+          return calculateOperatingProfit(
+            abcProfit.toString(),
+            product.operationCosts.toString()
+          ).toLocaleString();
         }),
       ],
       [
         "商品ごとの営業利益率",
         ...products.map((product) => {
           const netGrossProfit = calculateNetGrossProfit(
-            product.sales,
-            product.cost,
-            product.additionalCosts
+            product.sales.toString(),
+            product.cost.toString(),
+            product.additionalCosts.toString()
           );
           const salesProfit = calculateSalesProfit(
-            product.sales,
-            netGrossProfit,
-            product.promotionCosts
+            product.sales.toString(),
+            netGrossProfit.toString(),
+            product.promotionCosts.toString()
           );
-          const abcProfit = calculateABCProfit(salesProfit, product.abcCosts);
+          const abcProfit = calculateABCProfit(
+            salesProfit.toString(),
+            product.abcCosts.toString()
+          );
           const operatingProfit = calculateOperatingProfit(
-            abcProfit,
-            product.operationCosts
+            abcProfit.toString(),
+            product.operationCosts.toString()
           );
           return (
-            calculateOperatingProfitMargin(
-              product.sales,
-              operatingProfit
-            ).toFixed(2) + "%"
+            Math.round(
+              calculateOperatingProfitMargin(
+                product.sales.toString(),
+                operatingProfit.toString()
+              )
+            ).toLocaleString() + "%"
           );
         }),
       ],
@@ -285,45 +344,108 @@ const MainTable = () => {
     }
   };
 
-  const calculateGrossProfit = (sales: number, cost: number): number =>
-    sales - cost;
+  const calculateGrossProfit = (sales: string, cost: string): number => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericCost = parseFloat(cost.replace(/,/g, ""));
+    return numericSales - numericCost;
+  };
 
-  const calculateGrossMargin = (sales: number, cost: number) =>
-    sales ? ((sales - cost) / sales) * 100 : 0;
+  const calculateGrossMargin = (sales: string, cost: string): string => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericCost = parseFloat(cost.replace(/,/g, ""));
+    const margin =
+      numericSales > 0
+        ? ((numericSales - numericCost) / numericSales) * 100
+        : 0;
+    return Math.round(margin).toString() + "%";
+  };
 
   const calculateNetGrossProfit = (
-    sales: number,
-    cost: number,
-    additionalCosts: number
-  ) => sales - cost - additionalCosts;
+    sales: string,
+    cost: string,
+    additionalCosts: string
+  ): number => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericCost = parseFloat(cost.replace(/,/g, ""));
+    const numericAdditionalCosts = parseFloat(
+      additionalCosts.replace(/,/g, "")
+    );
+    return numericSales - numericCost - numericAdditionalCosts;
+  };
 
-  const calculateNetGrossMargin = (sales: number, netGrossProfit: number) =>
-    sales > 0 ? (netGrossProfit / sales) * 100 : 0;
+  const calculateNetGrossMargin = (
+    sales: string,
+    netGrossProfit: string
+  ): string => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericNetGrossProfit = parseFloat(netGrossProfit.replace(/,/g, ""));
+    const margin =
+      numericSales > 0 ? (numericNetGrossProfit / numericSales) * 100 : 0;
+    return Math.round(margin).toString() + "%";
+  };
 
   const calculateSalesProfit = (
-    sales: number,
-    netGrossProfit: number,
-    promotionCosts: number
-  ) => netGrossProfit - promotionCosts;
+    sales: string,
+    netGrossProfit: string,
+    promotionCosts: string
+  ): number => {
+    const numericNetGrossProfit = parseFloat(netGrossProfit.replace(/,/g, ""));
+    const numericPromotionCosts = parseFloat(promotionCosts.replace(/,/g, ""));
+    return numericNetGrossProfit - numericPromotionCosts;
+  };
 
-  const calculateSalesProfitMargin = (sales: number, salesProfit: number) =>
-    sales > 0 ? (salesProfit / sales) * 100 : 0;
+  const calculateSalesProfitMargin = (
+    sales: string,
+    salesProfit: string
+  ): string => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericSalesProfit = parseFloat(salesProfit.replace(/,/g, ""));
+    const margin =
+      numericSales > 0 ? (numericSalesProfit / numericSales) * 100 : 0;
+    return Math.round(margin).toString() + "%";
+  };
 
-  const calculateABCProfit = (salesProfit: number, abcCosts: number) =>
-    salesProfit - abcCosts;
+  const calculateABCProfit = (
+    salesProfit: string,
+    abcCosts: string
+  ): number => {
+    const numericSalesProfit = parseFloat(salesProfit.replace(/,/g, ""));
+    const numericAbcCosts = parseFloat(abcCosts.replace(/,/g, ""));
+    return numericSalesProfit - numericAbcCosts;
+  };
 
-  const calculateABCProfitMargin = (sales: number, abcProfit: number) =>
-    sales > 0 ? (abcProfit / sales) * 100 : 0;
+  const calculateABCProfitMargin = (
+    sales: string,
+    abcProfit: string
+  ): string => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericAbcProfit = parseFloat(abcProfit.replace(/,/g, ""));
+    const margin =
+      numericSales > 0 ? (numericAbcProfit / numericSales) * 100 : 0;
+    return Math.round(margin).toString() + "%";
+  };
 
   const calculateOperatingProfit = (
-    abcProfit: number,
-    operationCosts: number
-  ) => abcProfit - operationCosts;
+    abcProfit: string,
+    operationCosts: string
+  ): number => {
+    const numericAbcProfit = parseFloat(abcProfit.replace(/,/g, ""));
+    const numericOperationCosts = parseFloat(operationCosts.replace(/,/g, ""));
+    return numericAbcProfit - numericOperationCosts;
+  };
 
   const calculateOperatingProfitMargin = (
-    sales: number,
-    operatingProfit: number
-  ) => (sales > 0 ? (operatingProfit / sales) * 100 : 0);
+    sales: string,
+    operatingProfit: string
+  ): string => {
+    const numericSales = parseFloat(sales.replace(/,/g, ""));
+    const numericOperatingProfit = parseFloat(
+      operatingProfit.replace(/,/g, "")
+    );
+    const margin =
+      numericSales > 0 ? (numericOperatingProfit / numericSales) * 100 : 0;
+    return Math.round(margin).toString() + "%";
+  };
 
   return (
     <div className="" onClick={handleClickOutside}>
@@ -429,7 +551,7 @@ const MainTable = () => {
           <tbody className="bg-gray-50 divide-y divide-gray-200">
             <TableRow
               label="売上"
-              values={products.map((product) => product.sales)}
+              values={products.map((product) => product.sales.toLocaleString())}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "sales", value)
@@ -437,7 +559,7 @@ const MainTable = () => {
             />
             <TableRow
               label="原価"
-              values={products.map((product) => product.cost)}
+              values={products.map((product) => product.cost.toLocaleString())}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "cost", value)
@@ -446,81 +568,84 @@ const MainTable = () => {
             <TableRow
               label="売上総利益(粗利)"
               values={products.map((product) =>
-                calculateGrossProfit(product.sales, product.cost)
+                calculateGrossProfit(
+                  product.sales.toString(),
+                  product.cost.toString()
+                ).toLocaleString()
               )}
-              isPercentage={false}
               readOnly={true}
             />
             <TableRow
               label="売上総利益率"
               values={products.map((product) =>
-                calculateGrossMargin(product.sales, product.cost)
+                calculateGrossMargin(
+                  product.sales.toString(),
+                  product.cost.toString()
+                )
               )}
               isPercentage={true}
               readOnly={true}
             />
-
             <TableRow
               label="注文連動費"
-              values={products.map((product) => product.additionalCosts)}
+              values={products.map((product) =>
+                product.additionalCosts.toLocaleString()
+              )}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "additionalCosts", value)
               }
-              tooltipText={`注文や受注ごとに必ず発生するコスト。カード決済手数料、送料、梱包資材、同封物、ノベルティ、付属品などの料金を指します。
-              飲食店の場合は、使い捨て容器、ショッピングモールなどの手数料、キャッシュレス決済手数料などの料金を指します。
-              商品ごとに割り振りができない場合は、注文連動費の合計を商品売上比率であん分しましょう。
-              B to Bの場合は、注文連動費がかからないケースがほとんどなので「0」を入力しましょう。`}
             />
-
             <TableRow
               label="純粗利"
               values={products.map((product) =>
                 calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
-                )
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
+                ).toLocaleString()
               )}
               readOnly={true}
             />
-
             <TableRow
               label="純粗利率"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
-                return calculateNetGrossMargin(product.sales, netGrossProfit);
+                return calculateNetGrossMargin(
+                  product.sales.toString(),
+                  netGrossProfit.toString()
+                );
               })}
               isPercentage={true}
               readOnly={true}
             />
-
             <TableRow
               label="販促費"
-              values={products.map((product) => product.promotionCosts)}
+              values={products.map((product) =>
+                product.promotionCosts.toLocaleString()
+              )}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "promotionCosts", value)
               }
-              tooltipText={`広告、営業の人件費など受注を獲得するためにかかったコストを指します。`}
             />
             <TableRow
               label="販売利益"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 return calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
-                );
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
+                ).toLocaleString();
               })}
               readOnly={true}
             />
@@ -528,107 +653,109 @@ const MainTable = () => {
               label="販売利益率"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
                 );
-                return calculateSalesProfitMargin(product.sales, salesProfit);
+                return calculateSalesProfitMargin(
+                  product.sales.toString(),
+                  salesProfit.toString()
+                );
               })}
               isPercentage={true}
               readOnly={true}
             />
-
             <TableRow
               label="ABC"
-              values={products.map((product) => product.abcCosts)}
+              values={products.map((product) =>
+                product.abcCosts.toLocaleString()
+              )}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "abcCosts", value)
               }
-              tooltipText={`Activity-Based Costingの略です。商品ごとの人件費を指します。業務部門（マーケティング部や商品企画部など）の人件費をここに入れましょう。
-              ABC計算シートもご用意しております。
-              右の「A」ボタンをクリックしてご使用ください。`}
             />
-
             <TableRow
               label="ABC利益"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
                 );
-                return calculateABCProfit(salesProfit, product.abcCosts);
+                return calculateABCProfit(
+                  salesProfit.toString(),
+                  product.abcCosts.toString()
+                ).toLocaleString();
               })}
               readOnly={true}
             />
-
             <TableRow
               label="ABC利益率"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
                 );
                 const abcProfit = calculateABCProfit(
-                  salesProfit,
-                  product.abcCosts
+                  salesProfit.toString(),
+                  product.abcCosts.toString()
                 );
-                return calculateABCProfitMargin(product.sales, abcProfit);
+                return calculateABCProfitMargin(
+                  product.sales.toString(),
+                  abcProfit.toString()
+                );
               })}
               isPercentage={true}
               readOnly={true}
             />
-
             <TableRow
               label="運営費"
-              values={products.map((product) => product.operationCosts)}
+              values={products.map((product) =>
+                product.operationCosts.toLocaleString()
+              )}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "operationCosts", value)
               }
-              tooltipText={`家賃やバックオフィス業務の人件費を指します。
-              売上比率に応じてあん分した額を入力しましょう。
-              右の「➗」ボタンをクリックすれば、自動で売上比率に応じてあん分できます。`}
             />
-
             <TableRow
               label="商品ごとの営業利益"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
                 );
                 const abcProfit = calculateABCProfit(
-                  salesProfit,
-                  product.abcCosts
+                  salesProfit.toString(),
+                  product.abcCosts.toString()
                 );
                 return calculateOperatingProfit(
-                  abcProfit,
-                  product.operationCosts
-                );
+                  abcProfit.toString(),
+                  product.operationCosts.toString()
+                ).toLocaleString();
               })}
               readOnly={true}
             />
@@ -636,26 +763,26 @@ const MainTable = () => {
               label="商品ごとの営業利益率"
               values={products.map((product) => {
                 const netGrossProfit = calculateNetGrossProfit(
-                  product.sales,
-                  product.cost,
-                  product.additionalCosts
+                  product.sales.toString(),
+                  product.cost.toString(),
+                  product.additionalCosts.toString()
                 );
                 const salesProfit = calculateSalesProfit(
-                  product.sales,
-                  netGrossProfit,
-                  product.promotionCosts
+                  product.sales.toString(),
+                  netGrossProfit.toString(),
+                  product.promotionCosts.toString()
                 );
                 const abcProfit = calculateABCProfit(
-                  salesProfit,
-                  product.abcCosts
+                  salesProfit.toString(),
+                  product.abcCosts.toString()
                 );
                 const operatingProfit = calculateOperatingProfit(
-                  abcProfit,
-                  product.operationCosts
+                  abcProfit.toString(),
+                  product.operationCosts.toString()
                 );
                 return calculateOperatingProfitMargin(
-                  product.sales,
-                  operatingProfit
+                  product.sales.toString(),
+                  operatingProfit.toString()
                 );
               })}
               isPercentage={true}
