@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import TableRow from "./TableRow";
+import Tooltip from "./Tooltip";
 
 const MainTable = () => {
   const [products, setProducts] = useState([
@@ -399,7 +400,13 @@ const MainTable = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                項目
+                <Tooltip
+                  text={`1) 商品ごとの利益を可視化する場合は「商品名」、出品しているECモールごとの利益を可視化する場合には「ECモール名（Amazonなど）」を入力しましょう。
+                         2) B to Bであればクライアントごとの利益を可視化するためにクライアント名を入力しましょう。
+                         3) 飲食店で、店舗ごとの利益を可視化する場合は「店舗名」を入力。メニューごとの利益を可視化する場合は「メニュー名」を入力しましょう。`}
+                >
+                  項目
+                </Tooltip>
               </th>
               {products.map((product) => (
                 <th
