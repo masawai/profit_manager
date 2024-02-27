@@ -126,9 +126,9 @@ const MainTable = () => {
         "売上総利益率",
         ...products.map(
           (product) =>
-              calculateGrossMargin(
-                product.sales.toString(),
-                product.cost.toString()
+            calculateGrossMargin(
+              product.sales.toString(),
+              product.cost.toString()
             ).toLocaleString() + "%"
         ),
       ],
@@ -150,12 +150,12 @@ const MainTable = () => {
         "純粗利率",
         ...products.map(
           (product) =>
-              calculateNetGrossMargin(
+            calculateNetGrossMargin(
+              product.sales.toString(),
+              calculateNetGrossProfit(
                 product.sales.toString(),
-                calculateNetGrossProfit(
-                  product.sales.toString(),
-                  product.cost.toString(),
-                  product.additionalCosts.toString()
+                product.cost.toString(),
+                product.additionalCosts.toString()
               ).toString()
             ).toLocaleString() + "%"
         ),
@@ -193,9 +193,9 @@ const MainTable = () => {
             product.promotionCosts.toString()
           );
           return (
-              calculateSalesProfitMargin(
-                product.sales.toString(),
-                salesProfit.toString()
+            calculateSalesProfitMargin(
+              product.sales.toString(),
+              salesProfit.toString()
             ).toLocaleString() + "%"
           );
         }),
@@ -238,9 +238,9 @@ const MainTable = () => {
             product.abcCosts.toString()
           );
           return (
-              calculateABCProfitMargin(
-                product.sales.toString(),
-                abcProfit.toString()
+            calculateABCProfitMargin(
+              product.sales.toString(),
+              abcProfit.toString()
             ).toLocaleString() + "%"
           );
         }),
@@ -294,9 +294,9 @@ const MainTable = () => {
             product.operationCosts.toString()
           );
           return (
-              calculateOperatingProfitMargin(
-                product.sales.toString(),
-                operatingProfit.toString()
+            calculateOperatingProfitMargin(
+              product.sales.toString(),
+              operatingProfit.toString()
             ).toLocaleString() + "%"
           );
         }),
@@ -585,6 +585,10 @@ const MainTable = () => {
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "additionalCosts", value)
               }
+              tooltipText={`注文や受注ごとに必ず発生するコスト。カード決済手数料、送料、梱包資材、同封物、ノベルティ、付属品などの料金を指します。
+              飲食店の場合は、使い捨て容器、ショッピングモールなどの手数料、キャッシュレス決済手数料などの料金を指します。
+              商品ごとに割り振りができない場合は、注文連動費の合計を商品売上比率であん分しましょう。
+              B to Bの場合は、注文連動費がかからないケースがほとんどなので「0」を入力しましょう。`}
             />
             <TableRow
               label="純粗利"
@@ -622,6 +626,7 @@ const MainTable = () => {
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "promotionCosts", value)
               }
+              tooltipText={`広告、営業の人件費など受注を獲得するためにかかったコストを指します。`}
             />
             <TableRow
               label="販売利益"
@@ -669,6 +674,9 @@ const MainTable = () => {
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "abcCosts", value)
               }
+              tooltipText={`Activity-Based Costingの略です。商品ごとの人件費を指します。業務部門（マーケティング部や商品企画部など）の人件費をここに入れましょう。
+              ABC計算シートもご用意しております。
+              右の「A」ボタンをクリックしてご使用ください。`}
             />
             <TableRow
               label="ABC利益"
@@ -724,6 +732,9 @@ const MainTable = () => {
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "operationCosts", value)
               }
+              tooltipText={`家賃やバックオフィス業務の人件費を指します。
+              売上比率に応じてあん分した額を入力しましょう。
+              右の「➗」ボタンをクリックすれば、自動で売上比率に応じてあん分できます。`}
             />
             <TableRow
               label="商品ごとの営業利益"
