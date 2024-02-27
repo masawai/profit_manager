@@ -126,11 +126,9 @@ const MainTable = () => {
         "売上総利益率",
         ...products.map(
           (product) =>
-            Math.round(
               calculateGrossMargin(
                 product.sales.toString(),
                 product.cost.toString()
-              )
             ).toLocaleString() + "%"
         ),
       ],
@@ -152,15 +150,13 @@ const MainTable = () => {
         "純粗利率",
         ...products.map(
           (product) =>
-            Math.round(
               calculateNetGrossMargin(
                 product.sales.toString(),
                 calculateNetGrossProfit(
                   product.sales.toString(),
                   product.cost.toString(),
                   product.additionalCosts.toString()
-                )
-              )
+              ).toString()
             ).toLocaleString() + "%"
         ),
       ],
@@ -197,11 +193,9 @@ const MainTable = () => {
             product.promotionCosts.toString()
           );
           return (
-            Math.round(
               calculateSalesProfitMargin(
                 product.sales.toString(),
                 salesProfit.toString()
-              )
             ).toLocaleString() + "%"
           );
         }),
@@ -244,11 +238,9 @@ const MainTable = () => {
             product.abcCosts.toString()
           );
           return (
-            Math.round(
               calculateABCProfitMargin(
                 product.sales.toString(),
                 abcProfit.toString()
-              )
             ).toLocaleString() + "%"
           );
         }),
@@ -302,11 +294,9 @@ const MainTable = () => {
             product.operationCosts.toString()
           );
           return (
-            Math.round(
               calculateOperatingProfitMargin(
                 product.sales.toString(),
                 operatingProfit.toString()
-              )
             ).toLocaleString() + "%"
           );
         }),
