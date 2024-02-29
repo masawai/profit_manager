@@ -1,5 +1,7 @@
 import Footer from "@/components/Footer";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { GeistSans } from "geist/font/sans";
+import { Suspense } from "react";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -19,7 +21,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={GeistSans.className}>
+      {/* <head>
+        <Suspense>
+          <GoogleAnalyticsScript />
+        </Suspense>
+      </head> */}
       <body className="bg-background text-foreground">
+        <Suspense>
+          <GoogleAnalytics />
+        </Suspense>
         <main className="min-h-screen flex flex-col items-center font-sans">
           {children}
         </main>
