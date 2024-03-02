@@ -3,8 +3,8 @@ import React from "react";
 
 interface TableRowProps {
   label: string;
-  values: string[]; // Changed from number[] to string[]
-  isPercentage?: boolean;
+  values: string[]; // 合計値を除く全ての値
+  totalValue: string; // 新しい合計値のプロパティ
   readOnly?: boolean;
   onValueChange?: (index: number, value: string) => void;
   tooltipText?: string;
@@ -13,7 +13,7 @@ interface TableRowProps {
 const TableRow: React.FC<TableRowProps> = ({
   label,
   values,
-  isPercentage = false,
+  totalValue, // 合計値を受け取る
   readOnly = false,
   onValueChange,
   tooltipText,
@@ -29,11 +29,17 @@ const TableRow: React.FC<TableRowProps> = ({
 
   const readonlyInputClass =
     "px-6 py-4 whitespace-nowrap text-sm text-gray-500";
+
   return (
     <tr>
       <td className="px-6 py-4 whitespace-pre-line text-sm font-medium text-gray-900">
         {tooltipText ? <Tooltip text={tooltipText}>{label}</Tooltip> : label}
       </td>
+      {/* 合計値の列 */}
+      <td className={readonlyInputClass}>
+        <span>{totalValue}</span>
+      </td>
+      {/* 商品の値の列 */}
       {values.map((value, index) => (
         <td
           key={index}

@@ -16,7 +16,7 @@ export default function Header() {
 
   const isSupabaseConnected = canInitSupabaseClient();
   return (
-    <div className="flex flex-col gap-16 items-center bg-indigo-400">
+    <div className="flex flex-col gap-16 items-center bg-indigo-400 print:hidden">
       <header className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full  flex justify-between items-center p-2 text-sm">
           <div className="flex items-center">

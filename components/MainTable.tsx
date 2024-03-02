@@ -111,8 +111,16 @@ const MainTable = () => {
     );
     // 各項目ごとのデータを行として構築
     const rows = [
-      ["売上", ...products.map((product) => product.sales.toLocaleString())],
-      ["原価", ...products.map((product) => product.cost.toLocaleString())],
+      [
+        "売上",
+        ...products.map((product) => product.sales.toLocaleString()),
+        calculateTotal("sales").toLocaleString(),
+      ],
+      [
+        "原価",
+        ...products.map((product) => product.cost.toLocaleString()),
+        calculateTotal("cost").toLocaleString(),
+      ],
       [
         "売上総利益(粗利)",
         ...products.map((product) =>
@@ -121,6 +129,7 @@ const MainTable = () => {
             product.cost.toString()
           ).toLocaleString()
         ),
+        calculateTotalGrossProfit().toLocaleString(),
       ],
       [
         "売上総利益率",
@@ -131,10 +140,12 @@ const MainTable = () => {
               product.cost.toString()
             ).toLocaleString() + "%"
         ),
+        calculateTotalGrossMargin().toLocaleString() + "%",
       ],
       [
         "注文連動費",
         ...products.map((product) => product.additionalCosts.toLocaleString()),
+        calculateTotal("additionalCosts").toLocaleString(),
       ],
       [
         "純粗利",
@@ -145,6 +156,7 @@ const MainTable = () => {
             product.additionalCosts.toString()
           ).toLocaleString()
         ),
+        calculateTotalNetGrossProfit().toLocaleString(),
       ],
       [
         "純粗利率",
@@ -159,10 +171,12 @@ const MainTable = () => {
               ).toString()
             ).toLocaleString() + "%"
         ),
+        calculateTotalNetGrossMargin().toLocaleString() + "%",
       ],
       [
         "販促費",
         ...products.map((product) => product.promotionCosts.toLocaleString()),
+        calculateTotal("promotionCosts").toLocaleString(),
       ],
       [
         "販売利益",
@@ -178,6 +192,7 @@ const MainTable = () => {
             product.promotionCosts.toString()
           ).toLocaleString();
         }),
+        calculateTotalSalesProfit().toLocaleString(),
       ],
       [
         "販売利益率",
@@ -199,8 +214,13 @@ const MainTable = () => {
             ).toLocaleString() + "%"
           );
         }),
+        calculateTotalSalesProfitMargin().toLocaleString() + "%",
       ],
-      ["ABC", ...products.map((product) => product.abcCosts.toLocaleString())],
+      [
+        "ABC",
+        ...products.map((product) => product.abcCosts.toLocaleString()),
+        calculateTotal("abcCosts").toLocaleString(),
+      ],
       [
         "ABC利益",
         ...products.map((product) => {
@@ -219,6 +239,7 @@ const MainTable = () => {
             product.abcCosts.toString()
           ).toLocaleString();
         }),
+        calculateTotalABCProfit().toLocaleString(),
       ],
       [
         "ABC利益率",
@@ -244,10 +265,12 @@ const MainTable = () => {
             ).toLocaleString() + "%"
           );
         }),
+        calculateTotalABCProfitMargin().toLocaleString() + "%",
       ],
       [
         "運営費",
         ...products.map((product) => product.operationCosts.toLocaleString()),
+        calculateTotal("operationCosts").toLocaleString(),
       ],
       [
         "商品ごとの営業利益",
@@ -271,6 +294,7 @@ const MainTable = () => {
             product.operationCosts.toString()
           ).toLocaleString();
         }),
+        calculateTotalOperatingProfit().toLocaleString(),
       ],
       [
         "商品ごとの営業利益率",
@@ -300,6 +324,7 @@ const MainTable = () => {
             ).toLocaleString() + "%"
           );
         }),
+        calculateTotalOperatingProfitMargin().toLocaleString() + "%",
       ],
     ];
     // CSV形式の文字列に変換
@@ -310,7 +335,7 @@ const MainTable = () => {
     const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "products.csv");
+    link.setAttribute("download", "Profit Manager.csv");
     document.body.appendChild(link); // Firefoxではこのステップが必要
     link.click();
     document.body.removeChild(link);
@@ -437,6 +462,135 @@ const MainTable = () => {
     return Math.round(margin).toString() + "%";
   };
 
+  const calculateTotal = (field: keyof (typeof products)[0]) => {
+    return products.reduce((acc, product) => acc + product[field], 0);
+  };
+
+  const calculateTotalGrossProfit = () => {
+    return products.reduce(
+      (acc, product) =>
+        acc +
+        calculateGrossProfit(product.sales.toString(), product.cost.toString()),
+      0
+    );
+  };
+
+  const calculateTotalGrossMargin = () => {
+    const totalSales = calculateTotal("sales");
+    const totalGrossProfit = calculateTotalGrossProfit();
+    return totalSales > 0
+      ? ((totalGrossProfit / totalSales) * 100).toFixed(0)
+      : "0";
+  };
+
+  const calculateTotalNetGrossProfit = () => {
+    return products.reduce(
+      (acc, product) =>
+        acc +
+        calculateNetGrossProfit(
+          product.sales.toString(),
+          product.cost.toString(),
+          product.additionalCosts.toString()
+        ),
+      0
+    );
+  };
+
+  const calculateTotalNetGrossMargin = () => {
+    const totalSales = calculateTotal("sales");
+    const totalNetGrossProfit = calculateTotalNetGrossProfit();
+    return totalSales > 0
+      ? ((totalNetGrossProfit / totalSales) * 100).toFixed(0)
+      : "0";
+  };
+
+  const calculateTotalSalesProfit = () => {
+    return products.reduce((acc, product) => {
+      const netGrossProfit = calculateNetGrossProfit(
+        product.sales.toString(),
+        product.cost.toString(),
+        product.additionalCosts.toString()
+      );
+      return (
+        acc +
+        calculateSalesProfit(
+          product.sales.toString(),
+          netGrossProfit.toString(),
+          product.promotionCosts.toString()
+        )
+      );
+    }, 0);
+  };
+
+  const calculateTotalSalesProfitMargin = () => {
+    const totalSales = calculateTotal("sales");
+    const totalSalesProfit = calculateTotalSalesProfit();
+    return totalSales > 0
+      ? ((totalSalesProfit / totalSales) * 100).toFixed(0)
+      : "0";
+  };
+
+  const calculateTotalABCProfit = () => {
+    return products.reduce((acc, product) => {
+      const netGrossProfit = calculateNetGrossProfit(
+        product.sales.toString(),
+        product.cost.toString(),
+        product.additionalCosts.toString()
+      );
+      const salesProfit = calculateSalesProfit(
+        product.sales.toString(),
+        netGrossProfit.toString(),
+        product.promotionCosts.toString()
+      );
+      return (
+        acc +
+        calculateABCProfit(salesProfit.toString(), product.abcCosts.toString())
+      );
+    }, 0);
+  };
+
+  const calculateTotalABCProfitMargin = () => {
+    const totalSales = calculateTotal("sales");
+    const totalABCProfit = calculateTotalABCProfit();
+    return totalSales > 0
+      ? ((totalABCProfit / totalSales) * 100).toFixed(0)
+      : "0";
+  };
+
+  const calculateTotalOperatingProfit = () => {
+    return products.reduce((acc, product) => {
+      const netGrossProfit = calculateNetGrossProfit(
+        product.sales.toString(),
+        product.cost.toString(),
+        product.additionalCosts.toString()
+      );
+      const salesProfit = calculateSalesProfit(
+        product.sales.toString(),
+        netGrossProfit.toString(),
+        product.promotionCosts.toString()
+      );
+      const abcProfit = calculateABCProfit(
+        salesProfit.toString(),
+        product.abcCosts.toString()
+      );
+      return (
+        acc +
+        calculateOperatingProfit(
+          abcProfit.toString(),
+          product.operationCosts.toString()
+        )
+      );
+    }, 0);
+  };
+
+  const calculateTotalOperatingProfitMargin = () => {
+    const totalSales = calculateTotal("sales");
+    const totalOperatingProfit = calculateTotalOperatingProfit();
+    return totalSales > 0
+      ? ((totalOperatingProfit / totalSales) * 100).toFixed(0)
+      : "0";
+  };
+
   return (
     <div className="" onClick={handleClickOutside}>
       <div className="overflow-x-auto w-auto max-w-full m-2">
@@ -475,7 +629,7 @@ const MainTable = () => {
             {/* メニューの表示状態に基づいてメニューを表示/非表示 */}
             {isMenuVisible && (
               <div
-                className="origin-top-right absolute right-0 w-auto rounded-md shadow-lg bg-white bg-opacity-100"
+                className="origin-top-right absolute right-0 w-auto rounded-md shadow-lg bg-indigo-100 bg-opacity-100"
                 role="menu"
                 aria-orientation="vertical"
               >
@@ -483,7 +637,7 @@ const MainTable = () => {
                   {/* メニューオプション */}
                   <a
                     href="#"
-                    className="text-gray-700 block text-sm hover:bg-gray-100"
+                    className="text-gray-700 w-full block text-sm hover:bg-indigo-200"
                     role="menuitem"
                     onClick={(e) => {
                       e.preventDefault();
@@ -494,7 +648,7 @@ const MainTable = () => {
                   </a>
                   <a
                     href="#"
-                    className="text-gray-700 block text-sm hover:bg-gray-100"
+                    className="text-gray-700 block text-sm hover:bg-indigo-200"
                     role="menuitem"
                     onClick={(e) => {
                       e.preventDefault();
@@ -520,6 +674,9 @@ const MainTable = () => {
                   項目
                 </Tooltip>
               </th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                合計
+              </th>
               {products.map((product) => (
                 <th
                   key={product.id}
@@ -541,7 +698,10 @@ const MainTable = () => {
           <tbody className="bg-gray-50 divide-y divide-gray-200">
             <TableRow
               label="売上"
-              values={products.map((product) => product.sales.toLocaleString())}
+              values={[
+                ...products.map((product) => product.sales.toLocaleString()),
+              ]}
+              totalValue={calculateTotal("sales").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "sales", value)
@@ -549,7 +709,10 @@ const MainTable = () => {
             />
             <TableRow
               label="原価"
-              values={products.map((product) => product.cost.toLocaleString())}
+              values={[
+                ...products.map((product) => product.cost.toLocaleString()),
+              ]}
+              totalValue={calculateTotal("cost").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "cost", value)
@@ -557,30 +720,38 @@ const MainTable = () => {
             />
             <TableRow
               label="売上総利益(粗利)"
-              values={products.map((product) =>
-                calculateGrossProfit(
-                  product.sales.toString(),
-                  product.cost.toString()
-                ).toLocaleString()
-              )}
+              values={[
+                ...products.map((product) =>
+                  calculateGrossProfit(
+                    product.sales.toString(),
+                    product.cost.toString()
+                  ).toLocaleString()
+                ),
+              ]}
+              totalValue={calculateTotalGrossProfit().toLocaleString()}
               readOnly={true}
             />
             <TableRow
               label="売上総利益率"
-              values={products.map((product) =>
-                calculateGrossMargin(
-                  product.sales.toString(),
-                  product.cost.toString()
-                )
-              )}
-              isPercentage={true}
+              values={[
+                ...products.map((product) =>
+                  calculateGrossMargin(
+                    product.sales.toString(),
+                    product.cost.toString()
+                  )
+                ),
+              ]}
+              totalValue={calculateTotalGrossMargin() + "%"}
               readOnly={true}
             />
             <TableRow
               label="注文連動費"
-              values={products.map((product) =>
-                product.additionalCosts.toLocaleString()
-              )}
+              values={[
+                ...products.map((product) =>
+                  product.additionalCosts.toLocaleString()
+                ),
+              ]}
+              totalValue={calculateTotal("additionalCosts").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "additionalCosts", value)
@@ -592,36 +763,44 @@ const MainTable = () => {
             />
             <TableRow
               label="純粗利"
-              values={products.map((product) =>
-                calculateNetGrossProfit(
-                  product.sales.toString(),
-                  product.cost.toString(),
-                  product.additionalCosts.toString()
-                ).toLocaleString()
-              )}
+              values={[
+                ...products.map((product) =>
+                  calculateNetGrossProfit(
+                    product.sales.toString(),
+                    product.cost.toString(),
+                    product.additionalCosts.toString()
+                  ).toLocaleString()
+                ),
+              ]}
+              totalValue={calculateTotalNetGrossProfit().toLocaleString()}
               readOnly={true}
             />
             <TableRow
               label="純粗利率"
-              values={products.map((product) => {
-                const netGrossProfit = calculateNetGrossProfit(
-                  product.sales.toString(),
-                  product.cost.toString(),
-                  product.additionalCosts.toString()
-                );
-                return calculateNetGrossMargin(
-                  product.sales.toString(),
-                  netGrossProfit.toString()
-                );
-              })}
-              isPercentage={true}
+              values={[
+                ...products.map((product) => {
+                  const netGrossProfit = calculateNetGrossProfit(
+                    product.sales.toString(),
+                    product.cost.toString(),
+                    product.additionalCosts.toString()
+                  );
+                  return calculateNetGrossMargin(
+                    product.sales.toString(),
+                    netGrossProfit.toString()
+                  );
+                }),
+              ]}
+              totalValue={calculateTotalNetGrossMargin() + "%"}
               readOnly={true}
             />
             <TableRow
               label="販促費"
-              values={products.map((product) =>
-                product.promotionCosts.toLocaleString()
-              )}
+              values={[
+                ...products.map((product) =>
+                  product.promotionCosts.toLocaleString()
+                ),
+              ]}
+              totalValue={calculateTotal("promotionCosts").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "promotionCosts", value)
@@ -642,6 +821,7 @@ const MainTable = () => {
                   product.promotionCosts.toString()
                 ).toLocaleString();
               })}
+              totalValue={calculateTotalSalesProfit().toLocaleString()}
               readOnly={true}
             />
             <TableRow
@@ -662,7 +842,7 @@ const MainTable = () => {
                   salesProfit.toString()
                 );
               })}
-              isPercentage={true}
+              totalValue={calculateTotalSalesProfitMargin() + "%"}
               readOnly={true}
             />
             <TableRow
@@ -670,6 +850,7 @@ const MainTable = () => {
               values={products.map((product) =>
                 product.abcCosts.toLocaleString()
               )}
+              totalValue={calculateTotal("abcCosts").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "abcCosts", value)
@@ -696,6 +877,7 @@ const MainTable = () => {
                   product.abcCosts.toString()
                 ).toLocaleString();
               })}
+              totalValue={calculateTotalABCProfit().toLocaleString()}
               readOnly={true}
             />
             <TableRow
@@ -720,7 +902,7 @@ const MainTable = () => {
                   abcProfit.toString()
                 );
               })}
-              isPercentage={true}
+              totalValue={calculateTotalABCProfitMargin() + "%"}
               readOnly={true}
             />
             <TableRow
@@ -728,6 +910,7 @@ const MainTable = () => {
               values={products.map((product) =>
                 product.operationCosts.toLocaleString()
               )}
+              totalValue={calculateTotal("operationCosts").toLocaleString()}
               readOnly={false}
               onValueChange={(index, value) =>
                 handleInputChange(products[index].id, "operationCosts", value)
@@ -758,6 +941,7 @@ const MainTable = () => {
                   product.operationCosts.toString()
                 ).toLocaleString();
               })}
+              totalValue={calculateTotalOperatingProfit().toLocaleString()}
               readOnly={true}
             />
             <TableRow
@@ -786,7 +970,7 @@ const MainTable = () => {
                   operatingProfit.toString()
                 );
               })}
-              isPercentage={true}
+              totalValue={calculateTotalOperatingProfitMargin() + "%"}
               readOnly={true}
             />
           </tbody>
