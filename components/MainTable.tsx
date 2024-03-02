@@ -463,7 +463,7 @@ const MainTable = () => {
   };
 
   const calculateTotal = (field: keyof (typeof products)[0]) => {
-    return products.reduce((acc, product) => acc + product[field], 0);
+    return products.reduce((acc, product) => acc + Number(product[field]), 0);
   };
 
   const calculateTotalGrossProfit = () => {

@@ -32,7 +32,7 @@ const TableRow: React.FC<TableRowProps> = ({
 
   return (
     <tr>
-      <td className="px-6 py-4 whitespace-pre-line text-sm font-medium text-gray-900">
+      <td className="px-6 py-4 whitespace-pre-line text-sm text-gray-900">
         {tooltipText ? <Tooltip text={tooltipText}>{label}</Tooltip> : label}
       </td>
       {/* 合計値の列 */}
